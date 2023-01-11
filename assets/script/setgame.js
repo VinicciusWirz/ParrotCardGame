@@ -1,4 +1,10 @@
 let CardQuantity = 0;
+let turns = 0;
+let points = 0;
+let idFinder = 1;
+let maxPoints = 7;
+let clock = 0;
+
 askCards();
 function askCards() {
     const question = 'Digite a quantidade de cartas com que você quer jogar, um numero entre 4 e 14.'
@@ -7,6 +13,7 @@ function askCards() {
         document.querySelector('main').innerHTML += `<ul style = "grid-template-columns: repeat(${CardQuantity / 2}, 1fr);">
         </ul>`;
         placeCards(CardQuantity);
+        maxPoints = CardQuantity / 2;
     } else {
         askCards();
     }
@@ -16,9 +23,9 @@ function placeCards(CardQuantity) {
     const table = document.querySelector('ul');
     let deck = [];
     for (let i = 0; i < CardQuantity / 2; i++) {
-        const cardsOnTable = `<li class="" onclick="flipCard(this);">
-        <img src="./assets/imgs/back.png" alt="backcard">
-        <img src="./assets/imgs/${i + 1}parrot.gif" alt="frontcard" id = "card${i}">
+        const cardsOnTable = `<li class="" onclick="flipCard(this);" data-test="card">
+        <img src="./assets/imgs/back.png" alt="backcard" data-test="face-down-image">
+        <img src="./assets/imgs/${i + 1}parrot.gif" alt="frontcard" id = "card${i}" data-test="face-up-image">
         </li>`
         deck.push(cardsOnTable);
     }
@@ -39,10 +46,6 @@ function shuffle(array) {
     return array;
 }
 
-let turns = 0;
-let points = 0;
-let idFinder = 1;
-let maxPoints = CardQuantity/2;
 
 let firstCard = '';
 function flipCard(touch) {
@@ -76,22 +79,22 @@ function flipCard(touch) {
 function checkPoint() {
     if (points === maxPoints) {
         setTimeout(function () {
-            alert(`"Você ganhou em ${turns} jogadas!"`);
+            alert(`Você ganhou em ${turns} jogadas! A duração do jogo foi de ${clock} segundos!`);
             restart();
         }, 500);
     }
 }
-function removeOnClick(){
+function removeOnClick() {
     const cardsPlaced = document.querySelectorAll('li');
-    for(let i = 0; i < cardsPlaced.length; i++){
+    for (let i = 0; i < cardsPlaced.length; i++) {
         cardsPlaced[i].removeAttribute('onclick');
     }
 }
 
-function addOnClick(){
+function addOnClick() {
     const cardsPlaced = document.querySelectorAll('li');
-    for(let i = 0; i < cardsPlaced.length; i++){
-        cardsPlaced[i].setAttribute('onclick','flipCard(this);');
+    for (let i = 0; i < cardsPlaced.length; i++) {
+        cardsPlaced[i].setAttribute('onclick', 'flipCard(this);');
     }
 }
 function restart() {
@@ -102,8 +105,17 @@ function restart() {
         location.reload();
 
     } else if (restartAnswer === 'não') {
-
+        clearInterval(timer);
     } else {
         restart();
     }
+}
+
+const timer = setInterval(function () {
+    clock++
+    clockSet(clock);
+}, 1000);
+
+function clockSet(seg){
+    document.querySelector('.overlay p').innerHTML = `Timer: ${seg}s`
 }

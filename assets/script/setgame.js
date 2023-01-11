@@ -50,7 +50,6 @@ function shuffle(array) {
 let firstCard = '';
 function flipCard(touch) {
     const cardContent = touch.querySelector('li>img:last-child');
-
     if (!touch.classList.contains('flip') && idFinder === 1) {
         firstCard = cardContent;
         touch.classList.add('flip');
@@ -116,6 +115,6 @@ const timer = setInterval(function () {
     clockSet(clock);
 }, 1000);
 
-function clockSet(seg){
+function clockSet(seg) {
     document.querySelector('.overlay p').innerHTML = `Timer: ${seg}s`
 }

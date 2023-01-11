@@ -1,3 +1,4 @@
+let CardQuantity = 0;
 askCards();
 function askCards() {
     const question = 'Digite a quantidade de cartas com que você quer jogar, um numero entre 4 e 14.'
@@ -15,9 +16,9 @@ function placeCards(CardQuantity) {
     const table = document.querySelector('ul');
     let deck = [];
     for (let i = 0; i < CardQuantity / 2; i++) {
-        const cardsOnTable = `<li class="" onclick="addFlip(this);">
+        const cardsOnTable = `<li class="" onclick="flipCard(this);">
         <img src="./assets/imgs/back.png" alt="backcard">
-        <img src="./assets/imgs/${i + 1}parrot.gif" alt="frontcard">
+        <img src="./assets/imgs/${i + 1}parrot.gif" alt="frontcard" id = "card${i}">
         </li>`
         deck.push(cardsOnTable);
     }
@@ -36,4 +37,73 @@ function shuffle(array) {
         array[randomIndex] = tempValue;
     }
     return array;
+}
+
+let turns = 0;
+let points = 0;
+let idFinder = 1;
+let maxPoints = CardQuantity/2;
+
+let firstCard = '';
+function flipCard(touch) {
+    const cardContent = touch.querySelector('li>img:last-child');
+
+    if (!touch.classList.contains('flip') && idFinder === 1) {
+        firstCard = cardContent;
+        touch.classList.add('flip');
+        idFinder++;
+        turns++;
+    } else {
+        touch.classList.add('flip');
+        idFinder--;
+        turns++;
+        if (firstCard.getAttribute('id') === cardContent.getAttribute('id')) {
+            points++;
+            firstCard = '';
+            checkPoint();
+        } else {
+            removeOnClick();
+            setTimeout(function () {
+                touch.classList.remove('flip');
+                firstCard.parentElement.classList.remove('flip');
+                firstCard = '';
+                addOnClick();
+            }, 1000);
+        }
+    }
+}
+
+function checkPoint() {
+    if (points === maxPoints) {
+        setTimeout(function () {
+            alert(`"Você ganhou em ${turns} jogadas!"`);
+            restart();
+        }, 500);
+    }
+}
+function removeOnClick(){
+    const cardsPlaced = document.querySelectorAll('li');
+    for(let i = 0; i < cardsPlaced.length; i++){
+        cardsPlaced[i].removeAttribute('onclick');
+    }
+}
+
+function addOnClick(){
+    const cardsPlaced = document.querySelectorAll('li');
+    for(let i = 0; i < cardsPlaced.length; i++){
+        cardsPlaced[i].setAttribute('onclick','flipCard(this);');
+    }
+}
+function restart() {
+    const restartAnswer = prompt('Você gostaria de reiniciar a partida? Digite sim ou não');
+    if (restartAnswer === 'sim') {
+        // document.querySelector('main').removeChild(document.querySelector('ul'));
+        // askCards();
+        location.reload();
+
+    } else if (restartAnswer === 'não') {
+
+    } else {
+        restart();
+    }
 }

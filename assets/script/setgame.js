@@ -99,10 +99,7 @@ function addOnClick() {
 function restart() {
     const restartAnswer = prompt('Você gostaria de reiniciar a partida? Digite sim ou não');
     if (restartAnswer === 'sim') {
-        // document.querySelector('main').removeChild(document.querySelector('ul'));
-        // askCards();
         location.reload();
-
     } else if (restartAnswer === 'não') {
         clearInterval(timer);
     } else {

@@ -12,15 +12,11 @@ main {
     align-items: center;
 }
 
-main {
-    position: relative;
-}
-
 .overlay {
-    position: absolute;
+    position: fixed;
     top: 0px;
-    height: 100vh;
     width: 100vw;
+    z-index: 1;
 }
 
 .overlay p {
@@ -52,7 +48,6 @@ h1 {
 
 ul {
     display: grid;
-    /*grid-template-columns: repeat(7, 1fr);*/
     grid-gap: 30px;
     width: 70vw;
     place-items: center;
@@ -86,8 +81,9 @@ li>img:last-child {
 .flip {
     transform: rotateY(-180deg);
 }
-@media (max-width: 1200px){
-    ul{
+
+@media (max-width: 1200px) {
+    ul {
         display: flex !important;
         flex-wrap: wrap !important;
         justify-content: center !important;

@@ -1,19 +1,17 @@
-let CardQuantity = 0;
 let turns = 0;
-let points = 0;
-let idFinder = 1;
-let maxPoints = 7;
+let numAux = 1;
 let clock = 0;
+const oneSec = 1000;
 
 askCards();
 function askCards() {
-    const question = 'Digite a quantidade de cartas com que você quer jogar, um numero entre 4 e 14.'
+    const question = 'Digite a quantidade de cartas com que você quer jogar, um numero par entre 4 e 14.'
     CardQuantity = prompt(question);
     if (CardQuantity >= 4 && CardQuantity <= 14 && CardQuantity % 2 === 0) {
-        document.querySelector('main').innerHTML += `<ul style = "grid-template-columns: repeat(${CardQuantity / 2}, 1fr);">
+        combinations = CardQuantity / 2;
+        document.querySelector('main').innerHTML += `<ul style = "grid-template-columns: repeat(${combinations}, 1fr);">
         </ul>`;
         placeCards(CardQuantity);
-        maxPoints = CardQuantity / 2;
     } else {
         askCards();
     }
@@ -22,11 +20,11 @@ function askCards() {
 function placeCards(CardQuantity) {
     const table = document.querySelector('ul');
     let deck = [];
-    for (let i = 0; i < CardQuantity / 2; i++) {
+    for (let i = 0; i < combinations; i++) {
         const cardsOnTable = `<li class="" onclick="flipCard(this);" data-test="card">
         <img src="./assets/imgs/back.png" alt="backcard" data-test="face-down-image">
         <img src="./assets/imgs/${i + 1}parrot.gif" alt="frontcard" id = "card${i}" data-test="face-up-image">
-        </li>`
+        </li>`;
         deck.push(cardsOnTable);
     }
     deck = [...deck, ...deck];
@@ -46,54 +44,70 @@ function shuffle(array) {
     return array;
 }
 
+const timer = setInterval(function () {
+    clock++;
+    clockSet(clock);
+}, oneSec);
+
+function clockSet(seg) {
+    document.querySelector('p span').innerHTML = `${seg}`;
+}
+
+const CardsOnTable = document.querySelectorAll('li');
 
 let firstCard = '';
 function flipCard(touch) {
-    const cardContent = touch.querySelector('li>img:last-child');
-    if (!touch.classList.contains('flip') && idFinder === 1) {
-        firstCard = cardContent;
-        touch.classList.add('flip');
-        idFinder++;
+    const liCard = touch.classList;
+    if (!liCard.contains('flip') && numAux === 1) {
+        firstCard = touch;
+        liCard.add('flip');
+        numAux++;
         turns++;
+    } else if (!liCard.contains('flip') && numAux === 2) {
+        liCard.add('flip');
+        numAux--;
+        turns++;
+        checkSameCard(firstCard, touch);
+    }
+}
+function checkSameCard(cardOne, cardTwo) {
+    const idCardOne = cardOne.querySelector('li>img:last-child').getAttribute('id');
+    const idCardTwo = cardTwo.querySelector('li>img:last-child').getAttribute('id');
+    if (idCardOne === idCardTwo) {
+        cardOne.setAttribute('data-value', 'score');
+        cardTwo.setAttribute('data-value', 'score');
+        firstCard = '';
+        checkPoint();
     } else {
-        touch.classList.add('flip');
-        idFinder--;
-        turns++;
-        if (firstCard.getAttribute('id') === cardContent.getAttribute('id')) {
-            points++;
+        removeOnClick();
+        setTimeout(function () {
+            cardTwo.classList.remove('flip');
+            cardOne.classList.remove('flip');
             firstCard = '';
-            checkPoint();
-        } else {
-            removeOnClick();
-            setTimeout(function () {
-                touch.classList.remove('flip');
-                firstCard.parentElement.classList.remove('flip');
-                firstCard = '';
-                addOnClick();
-            }, 1000);
-        }
+            addOnClick();
+        }, oneSec);
     }
 }
 
 function checkPoint() {
-    if (points === maxPoints) {
+    const renderTime = oneSec / 10;
+    const CardsFlipped = document.querySelectorAll('[data-value = "score"]');
+    if (CardsOnTable.length === CardsFlipped.length) {
         setTimeout(function () {
             alert(`Você ganhou em ${turns} jogadas! A duração do jogo foi de ${clock} segundos!`);
             restart();
-        }, 500);
+        }, renderTime);
     }
 }
 function removeOnClick() {
-    const cardsPlaced = document.querySelectorAll('li');
-    for (let i = 0; i < cardsPlaced.length; i++) {
-        cardsPlaced[i].removeAttribute('onclick');
+    for (let i = 0; i < CardsOnTable.length; i++) {
+        CardsOnTable[i].removeAttribute('onclick');
     }
 }
 
 function addOnClick() {
-    const cardsPlaced = document.querySelectorAll('li');
-    for (let i = 0; i < cardsPlaced.length; i++) {
-        cardsPlaced[i].setAttribute('onclick', 'flipCard(this);');
+    for (let i = 0; i < CardsOnTable.length; i++) {
+        CardsOnTable[i].setAttribute('onclick', 'flipCard(this);');
     }
 }
 function restart() {
@@ -105,13 +119,4 @@ function restart() {
     } else {
         restart();
     }
-}
-
-const timer = setInterval(function () {
-    clock++
-    clockSet(clock);
-}, 1000);
-
-function clockSet(seg) {
-    document.querySelector('.overlay p').innerHTML = `Timer: ${seg}s`
 }

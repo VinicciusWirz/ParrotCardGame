@@ -5,22 +5,24 @@ const oneSec = 1000;
 
 askCards();
 function askCards() {
+    const minCards = 4;
+    const maxCards = 14;
     const question = 'Digite a quantidade de cartas com que você quer jogar, um numero par entre 4 e 14.'
-    CardQuantity = prompt(question);
-    if (CardQuantity >= 4 && CardQuantity <= 14 && CardQuantity % 2 === 0) {
-        combinations = CardQuantity / 2;
-        document.querySelector('main').innerHTML += `<ul style = "grid-template-columns: repeat(${combinations}, 1fr);">
+    const CardQuantity = prompt(question);
+    const uniques = CardQuantity / 2;
+    if (CardQuantity >= minCards && CardQuantity <= maxCards && CardQuantity % 2 === 0) {
+        document.querySelector('main').innerHTML += `<ul style = "grid-template-columns: repeat(${uniques}, 1fr);">
         </ul>`;
-        placeCards(CardQuantity);
+        placeCards(uniques);
     } else {
         askCards();
     }
 }
 
-function placeCards(CardQuantity) {
+function placeCards(uniques) {
     const table = document.querySelector('ul');
     let deck = [];
-    for (let i = 0; i < combinations; i++) {
+    for (let i = 0; i < uniques; i++) {
         const cardsOnTable = `<li class="" onclick="flipCard(this);" data-test="card">
         <img src="./assets/imgs/back.png" alt="backcard" data-test="face-down-image">
         <img src="./assets/imgs/${i + 1}parrot.gif" alt="frontcard" id = "card${i}" data-test="face-up-image">
@@ -65,7 +67,7 @@ function flipCard(touch) {
         turns++;
     } else if (!liCard.contains('flip') && numAux === 2) {
         liCard.add('flip');
-        numAux--;
+        numAux++;
         turns++;
         checkSameCard(firstCard, touch);
     }
@@ -77,14 +79,14 @@ function checkSameCard(cardOne, cardTwo) {
         cardOne.setAttribute('data-value', 'score');
         cardTwo.setAttribute('data-value', 'score');
         firstCard = '';
+        numAux = 1;
         checkPoint();
     } else {
-        removeOnClick();
         setTimeout(function () {
             cardTwo.classList.remove('flip');
             cardOne.classList.remove('flip');
             firstCard = '';
-            addOnClick();
+            numAux = 1;
         }, oneSec);
     }
 }
@@ -99,17 +101,7 @@ function checkPoint() {
         }, renderTime);
     }
 }
-function removeOnClick() {
-    for (let i = 0; i < CardsOnTable.length; i++) {
-        CardsOnTable[i].removeAttribute('onclick');
-    }
-}
 
-function addOnClick() {
-    for (let i = 0; i < CardsOnTable.length; i++) {
-        CardsOnTable[i].setAttribute('onclick', 'flipCard(this);');
-    }
-}
 function restart() {
     const restartAnswer = prompt('Você gostaria de reiniciar a partida? Digite sim ou não');
     if (restartAnswer === 'sim') {

@@ -22,10 +22,13 @@ main {
 .overlay p {
     margin: 15px 30px;
     text-align: end;
-    color: #75B79E;
     font-family: 'Roboto', sans-serif;
-    font-weight: 400;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
     letter-spacing: -0.004em;
+    font-family: 'Roboto';
+    color: #86BD8D;
 }
 
 header {
